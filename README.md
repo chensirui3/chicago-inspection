@@ -1,7 +1,7 @@
 # Chicago restaurant inspections: reproduce, beat, and stress-test the city's model
 
 <!-- BEGIN:summary -->
-This repo rebuilds the City of Chicago's 2014 restaurant-inspection model in Python and **reproduces its published result: 7.44 days earlier** (published 7.44) on the same 1,637 inspections, with the same first-half share (54.7% -> 68.2%) and coefficients within 0.007. Under the same rules, a blend of ridge logistic regression and LightGBM with new history, complaint, facility and neighborhood features finds critical violations **8.70 days earlier [5.77, 11.30]**, +1.32 days [+0.53, +2.12] versus the city's model in a paired bootstrap (a win: the interval is above zero; versus the city's XGBoost it is +0.93 [-0.02, +1.96]). **The inspector question:** most of the published gain depends on knowing who did each inspection. Scored with only what a scheduler knew on 2014-09-02, the city's model finds violations 2.06 days earlier [-0.82, 4.69], 72% less than published; my model keeps 6.10 days [3.27, 8.83].
+This repo rebuilds the City of Chicago's 2014 restaurant-inspection model in Python and **reproduces its published result: 7.44 days earlier** (published 7.44) on the same 1,637 inspections, with the same first-half share (54.7% -> 68.2%) and coefficients within 0.007. Under the same rules, a blend of ridge logistic regression and LightGBM with new history, complaint, facility and neighborhood features finds critical violations **8.70 days earlier [5.77, 11.30]**, +1.32 days [+0.53, +2.12] versus the city's model in a paired bootstrap (the interval is above zero; versus the city's XGBoost it is +0.93 [-0.02, +1.96]). **The inspector question:** most of the published gain depends on knowing who did each inspection. Scored with only what a scheduler knew on 2014-09-02, the city's model finds violations 2.06 days earlier [-0.82, 4.69], 72% less than published; my model keeps 6.10 days [3.27, 8.83].
 <!-- END:summary -->
 
 <!-- BEGIN:chart -->
@@ -169,7 +169,7 @@ The backtest moves each inspection to a new day but keeps the score computed wit
 
 **Knock-on effect.** After a visit by a lenient cluster, pastCritical = 1 is rare (7.2% vs 22.7% after a strict one), so it separates kitchens worse: AUC of pastCritical alone 0.521 [0.508, 0.533] vs 0.565 [0.543, 0.586] (7,687 training inspections with a known previous inspector). When it does fire, its effect is similar: the interaction pastCritical x strict-previous in a logistic model with the current inspector as control is +0.19 (SE 0.20, p = 0.32).
 
-**Geography.** Clusters work in particular areas: Cramér's V between cluster and community area is 0.50, and the strictest cluster (purple) does 97% of its inspections in just ten of the 77 community areas. Inspector and neighborhood effects are tangled, which matters for Extension B.
+**Geography.** Clusters work in particular areas: Cramér's V between cluster and community area is 0.50, and the strictest cluster (purple) does 97% of its inspections in just ten of the 77 community areas. Inspector and neighborhood effects are tangled, which matters for the fairness audit below.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="reports/figures/core3_cluster_maps-dark.png">
@@ -180,7 +180,7 @@ The backtest moves each inspection to a new day but keeps the score computed wit
 ## What I found
 
 <!-- BEGIN:findings -->
-The city's 7.44 days mostly come from one variable a scheduler cannot use. Removing the inspector clusters cuts the city model to 2.20 days [-0.66, 4.66], 70% less, and rebuilding the remaining features as of the first day of the window changes little more (2.06 days, an interval that includes zero). The inspector variable is strong because clusters differ in how often they record a critical violation for similar kitchens (0.19x to 2.64x the expected rate), and in the backtest each inspection keeps the score of the inspector who actually did it. Better history features recover much of the gap honestly: my model scored as of day one finds violations 6.10 days earlier [3.27, 8.83]. The report already said the daily model drops inspectors; these numbers show what that costs.
+The city's 7.44 days mostly come from one variable a scheduler cannot use. Removing the inspector clusters cuts the city model to 2.20 days [-0.66, 4.66], 70% less, and rebuilding the remaining features as of the first day of the window changes little more (2.06 days, an interval that includes zero). The inspector variable is strong because clusters differ in how often they record a critical violation for similar kitchens (0.19x to 2.64x the expected rate), and in the backtest each inspection keeps the score of the inspector who actually did it. Better history features, which a scheduler does have, recover much of the gap: my model scored as of day one finds violations 6.10 days earlier [3.27, 8.83]. The report already said the daily model drops inspectors; these numbers show what that costs.
 <!-- END:findings -->
 
 ## What I tried that didn't work (and what did)
@@ -202,7 +202,7 @@ The city's 7.44 days mostly come from one variable a scheduler cannot use. Remov
 ### A. Neighborhood fairness audit
 
 <!-- BEGIN:ext_b -->
-Inspections were placed in Chicago's 77 community areas with a spatial join (24 of 1,637 test inspections fall outside the polygons and are left out), then grouped into thirds of community areas by the 2008-2012 hardship index. Fairness definition: **calibration within groups**, because a scheduler acts on predicted risk; the other four metrics are shown too. All intervals are 1,000 bootstrap resamples (simulation re-run each time), and the simulation runs on the 1,613 placed inspections, so overall days-earlier here differ slightly from the 1,637-inspection headline.
+Inspections were placed in Chicago's 77 community areas with a spatial join (24 of 1,637 test inspections fall outside the polygons and are left out), then grouped into thirds of community areas by the 2008-2012 hardship index. Fairness definition: **calibration within groups**, because a scheduler acts on predicted risk; four other fairness metrics are shown too. All intervals are 1,000 bootstrap resamples (simulation re-run each time), and the simulation runs on the 1,613 placed inspections, so overall days-earlier here differ slightly from the 1,637-inspection headline.
 
 **Findings.** The city's model over-predicts risk in low-hardship areas by +3.5 percentage points [+1.2, +5.6], the one calibration gap whose interval excludes zero (mine: +1.0). The time savings go there too: under the city's model violations in low-hardship areas are found 13.6 days earlier, while those in middle-hardship areas are found 8.8 days *later* [1.2, 17.2] than in the actual schedule. Low-hardship areas do have the highest actual critical rate in the window, so part of this is risk-based prioritizing; my model narrows the middle-hardship loss to 5.4 days but does not close it.
 
@@ -280,13 +280,15 @@ A team orienteering problem in OR-Tools, solved day by day over the window (roll
   <img alt="One day's routes: actual visits vs planned" src="reports/figures/ext_a_routes.png" width="760">
 </picture>
 
-Caveats: complaint, license and re-inspections also take inspector time and are not planned here; like the city's backtest this assumes a violation found on day 40 would also have been there on day 1; actual routes are unknown, so the "Actual" travel is the optimal route through each day's actual visits (a lower bound); 0 test inspections lacked coordinates. The planner sends inspectors where predicted risk is concentrated (mostly the north side on the day mapped), which is the neighborhood question Extension B measures. OR-Tools' local search is time-limited, so travel hours can differ slightly between machines (compare the 10 s baseline with the 3 s row); every other number in this README is deterministic. 
+Caveats: complaint, license and re-inspections also take inspector time and are not planned here; like the city's backtest this assumes a violation found on day 40 would also have been there on day 1; actual routes are unknown, so the "Actual" travel is the optimal route through each day's actual visits (a lower bound); every test inspection had coordinates. The planner sends inspectors where predicted risk is concentrated (mostly the north side on the day mapped), which is the neighborhood question the fairness audit measures. OR-Tools' local search is time-limited, so travel hours can differ slightly between machines (compare the 10 s baseline with the 3 s row); every other number in this README is deterministic.
 <!-- END:ext_a -->
 
 ### C. Live nightly scoring
+
 [![ci](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml) [![nightly](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml)
 
 **Live dashboard:** https://chensirui3.github.io/chicago-inspection/, rebuilt nightly from the city's portal.
+
 <!-- BEGIN:ext_c -->
 **Label.** Under the 2018 food code a result of *Pass* means no Priority (P) or Priority Foundation (PF) violation, *Pass w/ Conditions* means at least one was found and corrected on site, *Fail* means at least one could not be corrected. So "at least one P or PF violation" = Fail or Pass w/ Conditions. It is broader than the 2014 critical-only target (about 48% of canvass inspections vs 15.8% in the 2014 test window), so **these numbers are not comparable with the 7.44 days**. History before July 2018 uses "any critical or serious violation" (codes 1-29), never old results. Completed canvass inspections only (Out of Business, No Entry, Business Not Located and Not Ready dropped).
 
@@ -294,7 +296,7 @@ Caveats: complaint, license and re-inspections also take inspector time and are 
 
 **Forward validation.** Train through one month, score the next, slide month by month (same ridge + LightGBM blend as Core 2, no inspector features). Over the last 12 full months the model finds P/PF violations 2.8 days earlier on average within each month (range 1.2 to 4.3; AUC 0.665). The days are smaller than a two-month window's because each month spans half as many days. The label drifted: 73% of canvass inspections found a P/PF violation in 2019, 39% over the last 12 months, so calibration drifts too; retraining every night and the calibration monitor exist for that.
 
-**Nightly job** (`.github/workflows/nightly.yml`, cron in UTC): fetch rows changed since the last run with the app token from the `SOCRATA_APP_TOKEN` secret; validate columns, row counts and freshness and fail loudly otherwise; rebuild features as of today; retrain; score the 8,793 retail food establishments due for a canvass (risk 1 after 6 months, risk 2 after a year, risk 3 after two); publish a static GitHub Pages dashboard (map by community area, score distribution, monthly backtest, last-updated time) and its CSV/JSON; compare earlier predictions with outcomes since for a calibration chart. Last local run: 2026-11-04 00:54 CST.
+**Nightly job** (`.github/workflows/nightly.yml`, cron in UTC): fetch rows changed since the last run with the app token from the `SOCRATA_APP_TOKEN` secret; validate columns, row counts and freshness and fail loudly otherwise; rebuild features as of today; retrain; score the 8,793 retail food establishments due for a canvass (risk 1 after 6 months, risk 2 after a year, risk 3 after two); publish a static GitHub Pages dashboard (map by community area, score distribution, monthly backtest, last-updated time) and its CSV/JSON; compare earlier predictions with outcomes since for a calibration chart. The numbers in this section are from the run of 2026-11-04 00:54 CST; the dashboard shows the latest run.
 
 **Publishing responsibly.** The page and its data files show only community-area aggregates (areas with fewer than 5 due establishments are suppressed) and model diagnostics. A score is a prediction, not an inspection result, so no ranked list of named restaurants is published; per-restaurant predictions stay in the private Actions cache for monitoring. Individual restaurants' actual results are already on the city's portal.
 
@@ -337,8 +339,8 @@ Caveats: complaint, license and re-inspections also take inspector time and are 
   new label.
 - **Rebuilt rows.** The 2019 snapshot no longer joins to the published row set by itself; the
   benchmark rows come from the city's own 2017 table (see Core 1).
-- **Scheduling assumptions** (Extension A) are not observed; the sensitivity table shows how
-  much they matter.
+- **Scheduling assumptions** are not observed; the sensitivity table shows how much they
+  matter.
 
 ## How to run
 
@@ -357,7 +359,7 @@ make test
 `make setup data` installs the pinned dependencies (`requirements-lock.txt`, Python 3.12) and
 clones the city's repository at a pinned commit to copy its `DATA/` folder into `data/raw/`
 (checksums verified; converted once to Parquet). `make reproduce` rebuilds every number and
-chart (about 12 minutes on a 16-thread laptop, 7 of them in Extension A's OR-Tools runs) and
+chart (about 12 minutes on a 16-thread laptop, 7 of them in the OR-Tools scheduling runs) and
 rewrites the generated sections of this README. Without `make` (for example on Windows):
 `pip install -r requirements-lock.txt && pip install -e . --no-deps`, then
 `python scripts/get_data.py --portal`, `python scripts/reproduce.py --update-readme` and
@@ -378,8 +380,8 @@ Random seeds are fixed in `src/inspections/config.py`; LightGBM runs in determin
 │   ├── models.py             # exact glmnet port, glum / scikit-learn routes, LightGBM
 │   ├── evaluate.py           # days-earlier simulation, first-half share, bootstrap
 │   ├── core1.py core2.py core3.py
-│   ├── fairness.py           # Extension B
-│   ├── schedule.py           # Extension A (OR-Tools)
+│   ├── fairness.py           # neighborhood fairness audit
+│   ├── schedule.py           # inspection scheduling (OR-Tools)
 │   ├── live.py site.py       # Extension C (nightly job, static dashboard)
 │   └── plots.py report.py readme.py
 ├── scripts/                  # get_data.py, reproduce.py, benchmark.py, nightly.py

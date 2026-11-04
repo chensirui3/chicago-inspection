@@ -242,7 +242,7 @@ AUC {recent['auc'].mean():.3f}.</p></div>
 <h2 style="margin-top:18px">Share finding a P/PF violation</h2>
 {line_svg(monthly, 'month', 'ppf_rate', '.0%')}</div>
 <div class="card"><h2>Calibration monitor</h2>{mon_html}
-<h2>Data checks (tonight's run)</h2><table>{health}</table>
+<h2>Data checks (latest run)</h2><table>{health}</table>
 <h2 style="margin-top:18px">About this page</h2><p class="note">A score is a prediction, not an
 inspection result. This page publishes only neighborhood aggregates and diagnostics, never a
 ranked list of named
@@ -250,7 +250,7 @@ restaurants; actual past results are on the
 <a href="https://data.cityofchicago.org/d/4ijn-s7e5">city's data portal</a>. Label: an
 inspection result of Fail or Pass w/ Conditions (at least one Priority or Priority Foundation
 violation under the 2018 food code); not comparable with the 2014 model's critical-only target.
-No inspector information is used. Rebuilt nightly by GitHub Actions; scheduled workflows in
-public repositories pause after 60 days without repository activity, so check the date above.
+No inspector information is used. Rebuilt nightly by GitHub Actions; the date at the top shows
+the latest run.
 </p></div></div><div id="tip" role="tooltip"></div></main><script>{JS}</script></body></html>"""
     (out_dir / "index.html").write_text(page, encoding="utf-8")

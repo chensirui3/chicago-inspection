@@ -1,7 +1,7 @@
 """Fetch the City of Chicago's data snapshot into data/ (never committed to git).
 
     python scripts/get_data.py           # city snapshot -> data/raw, Parquet -> data/processed
-    python scripts/get_data.py --portal  # also the small portal files used by Extension B
+    python scripts/get_data.py --portal  # also the small portal files for the fairness audit
 
 Steps: shallow-fetch github.com/Chicago/food-inspections-evaluation at a pinned commit into
 data/external/, copy DATA/*.Rds into data/raw/, verify SHA-256 checksums, then convert every
@@ -68,7 +68,8 @@ def copy_snapshot(repo: Path) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    ap.add_argument("--portal", action="store_true", help="also download Extension B portal data")
+    ap.add_argument("--portal", action="store_true",
+                    help="also download the portal files for the fairness audit")
     ap.add_argument("--force", action="store_true", help="rebuild the Parquet cache")
     args = ap.parse_args()
 

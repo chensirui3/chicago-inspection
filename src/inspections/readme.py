@@ -49,7 +49,9 @@ def sections() -> dict[str, str]:
             f"{ci(best['lo'], best['hi'])}**, {best['diff']:+.2f} days "
             f"{ci(best['diff_lo'], best['diff_hi'], '+.2f')} versus the city's model in a "
             f"paired bootstrap ("
-            + ("a win: the interval is above zero" if win else "not a significant win")
+            + ("the interval is above zero" if win
+               else "the interval is below zero" if best["diff_hi"] < 0
+               else "the interval includes zero")
             + f"; versus the city's XGBoost it is {best['diff_xgb']:+.2f} "
             f"{ci(best['diff_xgb_lo'], best['diff_xgb_hi'], '+.2f')}). **The inspector "
             f"question:** most of the published gain depends on knowing who did each "
@@ -94,7 +96,7 @@ def sections() -> dict[str, str]:
             "convergence tolerance is the likely cause). Matching lambda took reading glmnet's "
             "Fortran: for ridge (alpha = 0) its strong rule admits every variable at once, so "
             "lambda_max comes from the intercept-only gradient, not the gradient after the "
-            "unpenalized columns are fitted. glum and scikit-learn (the guide's two routes) "
+            "unpenalized columns are fitted. glum and scikit-learn "
             f"agree with this port to {route_diff:.0e}.",
             f"- **Dates.** Training data run {counts['train_first']} to {counts['train_last']}; "
             f"the test window is {counts['test_first']} to {counts['test_last']}. The 4.5-month "
@@ -176,7 +178,7 @@ def sections() -> dict[str, str]:
             f"community area is {geo['cramers_v_cluster_area']:.2f}, and the strictest cluster "
             f"({hi_c['cluster']}) does {geo['top10_area_share'][hi_c['cluster']]:.0%} of its "
             f"inspections in just ten of the 77 community areas. Inspector and neighborhood "
-            f"effects are tangled, which matters for Extension B.",
+            f"effects are tangled, which matters for the fairness audit below.",
             picture("core3_cluster_maps", "Map of inspections by inspector cluster", 760),
         ])
         insp_share = 1 - bt["city_no_insp"]["days_earlier"] / bt["published"]["days_earlier"]
@@ -191,9 +193,9 @@ def sections() -> dict[str, str]:
             + "). The inspector variable is strong because clusters differ in how often they "
             f"record a critical violation for similar kitchens ({lo_c['oe']:.2f}x to "
             f"{hi_c['oe']:.2f}x the expected rate), and in the backtest each inspection keeps "
-            f"the score of the inspector who actually did it. Better history features recover "
-            f"much of the gap honestly: my model scored as of day one finds violations "
-            f"{bt['best_asof']['days_earlier']:.2f} days earlier "
+            f"the score of the inspector who actually did it. Better history features, which a "
+            f"scheduler does have, recover much of the gap: my model scored as of day one "
+            f"finds violations {bt['best_asof']['days_earlier']:.2f} days earlier "
             f"{ci(bt['best_asof']['lo'], bt['best_asof']['hi'])}. The report already said the "
             f"daily model drops inspectors; these numbers show what that costs.")
 
@@ -234,8 +236,8 @@ def sections() -> dict[str, str]:
             f"({b['placement']['unplaced']} of {b['placement']['test_inspections']:,} test "
             f"inspections fall outside the polygons and are left out), then grouped into "
             f"thirds of community areas by the 2008-2012 hardship index. Fairness definition: "
-            f"**calibration within groups**, because a scheduler acts on predicted risk; the "
-            f"other four metrics from the guide are shown too. All intervals are 1,000 "
+            f"**calibration within groups**, because a scheduler acts on predicted risk; four "
+            f"other fairness metrics are shown too. All intervals are 1,000 "
             f"bootstrap resamples (simulation re-run each time), and the simulation runs on the "
             f"{b['placement']['analyzed']:,} placed inspections, so overall days-earlier here "
             f"differ slightly from the 1,637-inspection headline.",
@@ -284,14 +286,14 @@ def sections() -> dict[str, str]:
             "not planned here; like the city's backtest this assumes a violation found on day "
             "40 would also have been there on day 1; actual routes are unknown, so the "
             "\"Actual\" travel is the optimal route through each day's actual visits (a lower "
-            f"bound); {a['dropped_no_coordinates']} test inspections lacked coordinates. The "
-            "planner sends inspectors where predicted risk is concentrated (mostly the north "
-            "side on the day mapped), which is the neighborhood question Extension B measures. "
-            "OR-Tools' local search is time-limited, so travel hours can differ slightly "
-            "between machines (compare the 10 s baseline with the 3 s row); every other "
-            "number in this README is deterministic. The guide suggests PATH_CHEAPEST_ARC for "
-            "the first solution, but under the daily visit cap it returns an empty plan, so "
-            "optional-visit problems start from PARALLEL_CHEAPEST_INSERTION.",
+            "bound); "
+            + ("every test inspection had coordinates" if not a["dropped_no_coordinates"]
+               else f"{a['dropped_no_coordinates']} test inspections lacked coordinates")
+            + ". The planner sends inspectors where predicted risk is concentrated (mostly the "
+            "north side on the day mapped), which is the neighborhood question the fairness "
+            "audit measures. OR-Tools' local search is time-limited, so travel hours can "
+            "differ slightly between machines (compare the 10 s baseline with the 3 s row); "
+            "every other number in this README is deterministic.",
         ])
 
     c = r.get("ext_c")

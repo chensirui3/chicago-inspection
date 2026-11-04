@@ -569,13 +569,14 @@ def write_report(bt: pd.DataFrame, monthly: pd.DataFrame, summary: dict) -> dict
         f"canvass (risk 1 after 6 months, risk 2 after a year, risk 3 after two); publish a "
         f"static GitHub Pages dashboard (map by community area, score distribution, monthly "
         f"backtest, last-updated time) and its CSV/JSON; compare earlier predictions with "
-        f"outcomes since for a calibration chart. Last local run: {summary['updated']}.\n\n"
+        f"outcomes since for a calibration chart. The numbers in this section are from the run "
+        f"of {summary['updated']}; the dashboard shows the latest run.\n\n"
         f"**Publishing responsibly.** The page and its data files show only community-area "
         f"aggregates (areas with fewer than 5 due establishments are suppressed) and model "
         f"diagnostics. A score is a prediction, not an inspection result, so no ranked list of "
         f"named restaurants is published; per-restaurant predictions stay in the private "
         f"Actions cache for monitoring. Individual restaurants' actual results are already on "
-        f"the city's portal.\n\n")
+        f"the city's portal.")
     out = {"text": text, "recent_days": float(recent["days_earlier"].mean()),
            "recent_auc": float(recent["auc"].mean()), "summary": summary}
     report.save_results("ext_c", out)

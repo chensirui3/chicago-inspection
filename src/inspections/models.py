@@ -4,8 +4,8 @@
 per-feature penalty factors: the same objective, standardization, penalty-factor rescaling,
 lambda sequence and cross-validation rule as ``glmnet``/``cv.glmnet`` (glmnet 2.x/4.x), used by
 CODE/30a_glmnet_model.R of the City of Chicago's food-inspections-evaluation repository
-(Copyright, 2014 City of Chicago; MIT-style license). ``fit_glum`` and ``fit_sklearn`` are the
-two library routes suggested in the project guide and are kept as cross-checks.
+(Copyright, 2014 City of Chicago; MIT-style license). ``fit_glum`` and ``fit_sklearn`` fit the
+same model with two standard libraries and are kept as cross-checks.
 """
 
 from __future__ import annotations
@@ -207,7 +207,7 @@ def inspector_penalty(columns) -> np.ndarray:
 
 
 # ----------------------------------------------------------------------------------------------
-# The two library routes from the guide (kept as cross-checks of the port)
+# The same model with two standard libraries (kept as cross-checks of the port)
 # ----------------------------------------------------------------------------------------------
 def fit_glum(X, y, penalty_factor, lam: float):
     """glum route: binomial, l1_ratio = 0, per-feature P2 = glmnet's rescaled penalty factors."""

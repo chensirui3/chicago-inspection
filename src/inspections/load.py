@@ -1,10 +1,10 @@
 """Read the city's .Rds snapshot and the live Chicago data portal.
 
-The guide suggests pyreadr for the .Rds files. With the pinned snapshot pyreadr 0.5 crashes the
-interpreter on ``23_food_insp_features.Rds`` (a segfault, so it cannot be caught) and silently
-reads data.table ``IDate`` columns in ``24_bus_features.Rds`` as 1970-01-01. This module therefore
-reads every file with ``rdata`` (a pure-Python R serialization parser), registers converters for
-R's ``Date``/``IDate``/``POSIXct`` classes, and caches each table once as Parquet.
+pyreadr is the usual Python reader for .Rds files, but with the pinned snapshot pyreadr 0.5
+crashes the interpreter on ``23_food_insp_features.Rds`` (a segfault, so it cannot be caught) and
+silently reads data.table ``IDate`` columns in ``24_bus_features.Rds`` as 1970-01-01. This module
+therefore reads every file with ``rdata`` (a pure-Python R serialization parser), registers
+converters for R's ``Date``/``IDate``/``POSIXct`` classes, and caches each table once as Parquet.
 """
 
 from __future__ import annotations

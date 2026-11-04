@@ -7,7 +7,7 @@ setup:
 	$(PY) -m pip install -r requirements-lock.txt
 	$(PY) -m pip install -e . --no-deps
 
-## Download the city's snapshot (and the small portal files used by Extension B)
+## Download the city's snapshot (and the small portal files used by the fairness audit)
 data:
 	$(PY) scripts/get_data.py --portal
 

@@ -1,10 +1,10 @@
-"""Extension B: does the priority list treat neighborhoods evenly?
+"""Neighborhood fairness audit: does the priority list treat neighborhoods evenly?
 
 Fairness definition used for the headline: **calibration within groups** (a group's mean
 predicted risk should equal its actual critical-violation rate). A scheduler acts on predicted
 risk, so a group whose risk is over-predicted gets inspected early more than its kitchens
 warrant (a burden on owners) and an under-predicted group waits longer than it should (exposure
-for residents). The other four metrics in the guide are reported alongside it, all with
+for residents). Four other gap metrics are reported alongside it, all with
 bootstrap intervals; they can disagree, and choosing among them is a policy decision.
 """
 
@@ -46,7 +46,7 @@ def attach_groups(pub: pd.DataFrame) -> pd.DataFrame:
 # Group metrics
 # ----------------------------------------------------------------------------------------------
 def group_metrics(test: pd.DataFrame, scores, midpoint: pd.Timestamp) -> pd.DataFrame:
-    """The guide's five gap metrics, per hardship group, for one model on the test window."""
+    """Five gap metrics, per hardship group, for one model on the test window."""
     d = evaluate.as_days(test["Inspection_Date"])
     y = test["criticalFound"].to_numpy()
     s = np.asarray(scores, float)

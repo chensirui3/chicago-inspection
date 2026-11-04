@@ -1,4 +1,4 @@
-"""Extension A: turn risk scores into daily inspector routes (team orienteering, OR-Tools).
+"""Scheduling: turn risk scores into daily inspector routes (team orienteering, OR-Tools).
 
 Each day of the Sept-Oct 2014 window the planner sees the restaurants still waiting, their
 predicted risk and locations. It chooses which restaurants each inspector visits and in what
@@ -98,8 +98,9 @@ def solve_day(lat, lon, prize, starts_latlon, a: Assumptions, max_visits: int,
             routing.AddDisjunction([manager.NodeToIndex(k + n)], int(prize[n]))
 
     params = pywrapcp.DefaultRoutingSearchParameters()
-    # PATH_CHEAPEST_ARC (the guide's suggestion) cannot build a first solution under the global
-    # visit cap and returns an empty plan, so optional-visit problems start from insertion.
+    # PATH_CHEAPEST_ARC, the usual first-solution strategy, cannot build a first solution under
+    # the global visit cap and returns an empty plan, so optional-visit problems start from
+    # insertion.
     fs = routing_enums_pb2.FirstSolutionStrategy
     params.first_solution_strategy = (fs.PATH_CHEAPEST_ARC if mandatory
                                       else fs.PARALLEL_CHEAPEST_INSERTION)
