@@ -14,7 +14,7 @@ This repo rebuilds the City of Chicago's 2014 restaurant-inspection model in Pyt
 Every number, table and chart below is written by `scripts/reproduce.py` (Extension C's by
 `scripts/nightly.py`); nothing is copied from a notebook.
 
-## 1: the city's model, reproduced in Python
+## 1. The city's model, reproduced in Python
 
 Ports of `CODE/30a_glmnet_model.R` (joins, transforms, ridge model that penalizes only the
 inspector columns) and `CODE/30b_glmnet_model_evaluation.R` (the days-earlier simulation and
@@ -78,7 +78,7 @@ first-half share), run on the city's own data snapshot.
 </picture>
 <!-- END:core1 -->
 
-## 2: beating the benchmark
+## 2. Beating the benchmark
 
 <!-- BEGIN:core2 -->
 Same rows, split, target and metric code as Core 1. Choices were made only inside the training period: six rolling windows (train before a cutoff, validate on the next two months; cutoffs May 2013 to March 2014), never random K-fold, because a restaurant's later visits would leak into training. Hyperparameters were chosen by validation log-loss and the model family by validation days-earlier; the test window was then scored once per final model. Every model was run with and without the inspector feature.
@@ -136,7 +136,7 @@ Intervals: 1,000 paired bootstrap resamples of the 1,637 test inspections; resam
 </details>
 <!-- END:core2 -->
 
-## 3: the inspector question
+## 3. The inspector question
 
 <!-- BEGIN:core3 -->
 The backtest moves each inspection to a new day but keeps the score computed with the inspector who actually did it, the temperature of its actual date and the time since its last visit measured to that date. The rows below remove the inspector, then rebuild every feature as of 2014-09-02 (history and license age up to that date, density windows ending that date, no inspector, no temperature) and rank once.
