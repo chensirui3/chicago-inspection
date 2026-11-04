@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      reproduce:
+        description: "Also download the city's snapshot and run scripts/reproduce.py"
+        type: boolean
+        default: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-lock.txt
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install -r requirements-lock.txt
+          python -m pip install -e . --no-deps
+      - name: Lint
+        run: ruff check .
+      - name: Unit tests (tests that need the data snapshot are skipped here)
+        run: pytest
+
+  reproduce:
+    # Manual only: clones the city's 138 MB snapshot and rebuilds every README number.
+    if: github.event_name == 'workflow_dispatch' && inputs.reproduce
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-lock.txt
+      - run: |
+          python -m pip install -r requirements-lock.txt
+          python -m pip install -e . --no-deps
+      - run: python scripts/get_data.py --portal
+      - run: python scripts/reproduce.py
+      - run: pytest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: reports/

@@ -1,0 +1,32 @@
+# Data never goes in git: scripts/get_data.py rebuilds data/ from the city's repo and portal.
+data/
+
+# Secrets (the Socrata app token lives in an environment variable or a GitHub secret)
+.env
+*.token
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Intermediate model caches written by scripts (final tables and figures in reports/ are kept)
+reports/cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Extension C dashboard: built and deployed by the nightly GitHub Actions job
+site/
+
+# Local editor/agent settings
+.claude/

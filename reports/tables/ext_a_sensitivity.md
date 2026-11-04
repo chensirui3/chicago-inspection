@@ -1,0 +1,12 @@
+| Assumption | Routing: days earlier | Routing: travel h | Routing: not reached | Ranking only: days earlier | Ranking only: travel h | Ranking only: overtime h |
+|---|---|---|---|---|---|---|
+| inspectors = 5 | -2.85 | 321 | 585 | 6.10 | 391 | 582 |
+| inspectors = 15 | 6.14 | 520 | 0 | 6.10 | 551 | 0 |
+| shift_min = 210 | -6.88 | 442 | 842 | 6.10 | 553 | 738 |
+| shift_min = 630 | 6.11 | 390 | 0 | 6.10 | 414 | 0 |
+| service_min = 30 | 6.14 | 364 | 0 | 6.10 | 396 | 0 |
+| service_min = 90 | 2.10 | 542 | 282 | 6.10 | 602 | 298 |
+| speed_kmh = 10.0 | 4.35 | 1,076 | 153 | 6.10 | 1,259 | 169 |
+| speed_kmh = 30.0 | 6.15 | 326 | 1 | 6.10 | 337 | 0 |
+| start = zones | 6.19 | 271 | 0 | 6.10 | 317 | 0 |
+| (baseline, 3 s limit) | 6.09 | 512 | 5 | 6.10 | 547 | 3 |

@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chicago-inspections"
+version = "0.1.0"
+description = "Reproduce, beat and stress-test Chicago's 2014 restaurant-inspection model in Python."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+# Direct dependencies, pinned. requirements-lock.txt pins the full transitive set.
+dependencies = [
+    "numpy==2.5.4",
+    "pandas==3.1.0",
+    "pyarrow==26.0.1",
+    "scipy==1.18.1",
+    "rdata==1.1.0",
+    "scikit-learn==1.9.1",
+    "glum==3.4.1",
+    "lightgbm==4.7.0",
+    "statsmodels==0.15.0",
+    "matplotlib==3.11.2",
+    "geopandas==1.2.0",
+    "shapely==2.2.0",
+    "pyogrio==0.13.0",
+    "pyproj==3.8.0",
+    "ortools==9.15.6755",
+    "fairlearn==0.15.0",
+    "requests==2.34.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0", "ruff==0.17.3"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "NPY", "SIM"]
+ignore = ["SIM108"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["data: needs the city's data snapshot in data/ (skipped when it is missing)"]

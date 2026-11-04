@@ -1,0 +1,89 @@
+name: nightly
+
+# Extension C. Cron schedules run in UTC: 11:15 UTC is 6:15 am in Chicago in summer (CDT) and
+# 5:15 am in winter (CST), after the portal's overnight refresh.
+# GitHub disables scheduled workflows in public repositories after 60 days without repository
+# activity; re-enable from the Actions tab or with `gh workflow enable nightly.yml`.
+on:
+  schedule:
+    - cron: "15 11 * * *"
+  workflow_dispatch:
+    inputs:
+      backtest:
+        description: "Recompute the monthly forward backtest"
+        type: boolean
+        default: false
+      full_refresh:
+        description: "Refetch everything from the portal"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-lock.txt
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install -r requirements-lock.txt
+          python -m pip install -e . --no-deps
+
+      # Raw portal pulls, the job state and the per-restaurant prediction history live in the
+      # Actions cache (private to the repository), never in git or on the public page.
+      - name: Restore live data
+        uses: actions/cache/restore@v4
+        with:
+          path: data/live
+          key: live-${{ github.run_id }}
+          restore-keys: live-
+
+      - name: Community-area boundaries
+        run: python -c "from inspections import load; load.fetch_extension_b_data()"
+
+      - name: Fetch, validate, retrain, score, publish, monitor
+        env:
+          SOCRATA_APP_TOKEN: ${{ secrets.SOCRATA_APP_TOKEN }}
+        run: |
+          ARGS=""
+          # Recompute the monthly backtest on Mondays or on request.
+          if [ "$(date -u +%u)" = "1" ] || [ "${{ inputs.backtest }}" = "true" ]; then
+            ARGS="$ARGS --backtest"
+          fi
+          if [ "${{ inputs.full_refresh }}" = "true" ]; then ARGS="$ARGS --full-refresh"; fi
+          python scripts/nightly.py $ARGS
+
+      - name: Save live data
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: data/live
+          key: live-${{ github.run_id }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: score
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

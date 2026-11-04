@@ -1,0 +1,5 @@
+| Hardship group | Test inspections (violations) | Actual rate | Predicted minus actual, city | Predicted minus actual, mine | First-half share minus violation share, city | First-half share minus violation share, mine | Days earlier, city | Days earlier, mine |
+|---|---|---|---|---|---|---|---|---|
+| Low hardship | 1,002 (179) | 17.9% | +0.035 [+0.012, +0.056] | +0.010 [-0.012, +0.030] | +0.057 [-0.004, +0.116] | +0.041 [-0.017, +0.093] | 13.6 [10.7, 16.9] | 13.9 [10.8, 17.2] |
+| Middle | 284 (28) | 9.9% | +0.009 [-0.026, +0.042] | +0.007 [-0.029, +0.040] | -0.039 [-0.078, +0.001] | -0.028 [-0.064, +0.013] | -8.8 [-17.2, -1.2] | -5.4 [-14.0, 2.8] |
+| High hardship | 327 (46) | 14.1% | -0.003 [-0.045, +0.037] | -0.011 [-0.052, +0.027] | -0.018 [-0.068, +0.035] | -0.013 [-0.059, +0.037] | -4.7 [-10.3, 1.6] | -0.8 [-6.2, 5.9] |

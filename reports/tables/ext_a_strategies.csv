@@ -1,0 +1,5 @@
+Strategy,Avg. days earlier,Critical violations found in first half,Travel hours (window total),Overtime hours,Inspections per inspector-day,Not reached by Oct 31
+Actual,0.00,54.7%,534,2,4.7,0
+Ranking only (city's method),6.10,67.1%,547,4,4.7,0
+Ranking plus routing (OR-Tools),6.09,66.7%,509,0,4.8,3
+Geography only,0.90,56.2%,364,0,5.1,20

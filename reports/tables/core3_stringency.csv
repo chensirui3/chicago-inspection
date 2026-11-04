@@ -1,0 +1,7 @@
+Cluster,Training inspections,Actual critical rate,Expected from non-inspector features,Observed / expected [95% CI],City coefficient
+brown,"1,878",2.4%,12.7%,"0.19 [0.14, 0.25]",-1.31
+yellow,"2,762",5.8%,13.9%,"0.41 [0.35, 0.48]",-0.70
+green,"4,595",9.5%,14.6%,"0.65 [0.59, 0.71]",-0.24
+orange,"3,769",13.6%,13.4%,"1.02 [0.93, 1.10]",+0.20
+blue,"2,897",26.5%,14.5%,"1.83 [1.72, 1.95]",+0.95
+purple,"1,174",40.6%,15.4%,"2.64 [2.45, 2.82]",+1.55

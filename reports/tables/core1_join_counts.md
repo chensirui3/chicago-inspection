@@ -1,0 +1,10 @@
+| Step (CODE/30a order) | Rows |
+|---|---|
+| food[bus] | 27600 |
+| + inspector clusters | 22400 |
+| + 3-day weather | 22400 |
+| + density features | 22300 |
+| Retail Food Establishment | 18781 |
+| restricted to the published table (DATA/30_xgboost_data.Rds) | 18712 |
+| 2019 snapshot join: train / test / positives | 17,116 / 1,665 / 263 |
+| published rows: train / test / positives | 17,075 / 1,637 / 258 |
