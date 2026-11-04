@@ -3,7 +3,8 @@ name: nightly
 # Extension C. Cron schedules run in UTC: 11:15 UTC is 6:15 am in Chicago in summer (CDT) and
 # 5:15 am in winter (CST), after the portal's overnight refresh.
 # GitHub disables scheduled workflows in public repositories after 60 days without repository
-# activity; re-enable from the Actions tab or with `gh workflow enable nightly.yml`.
+# activity. The keepalive job re-enables this workflow on every run so that does not happen; if
+# it ever does, re-enable from the Actions tab or with `gh workflow enable nightly.yml`.
 on:
   schedule:
     - cron: "15 11 * * *"
@@ -29,11 +30,13 @@ concurrency:
 
 jobs:
   score:
-    runs-on: ubuntu-latest
+    # A fixed image rather than ubuntu-latest, so a new Ubuntu release cannot change the OS
+    # under the pinned Python stack.
+    runs-on: ubuntu-26.04
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -46,7 +49,7 @@ jobs:
       # Raw portal pulls, the job state and the per-restaurant prediction history live in the
       # Actions cache (private to the repository), never in git or on the public page.
       - name: Restore live data
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: data/live
           key: live-${{ github.run_id }}
@@ -69,21 +72,35 @@ jobs:
 
       - name: Save live data
         if: success()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: data/live
           key: live-${{ github.run_id }}
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
   deploy:
     needs: score
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
+
+  keepalive:
+    # Re-enabling the workflow through the API restarts GitHub's 60-day inactivity count without
+    # a commit. GitHub does not document this, but keepalive actions such as
+    # liskin/gh-workflow-keepalive rely on it. Independent of scoring, so a portal outage cannot
+    # let the schedule lapse.
+    runs-on: ubuntu-26.04
+    permissions:
+      actions: write
+    steps:
+      - name: Re-enable this workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/nightly.yml/enable"

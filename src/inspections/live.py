@@ -575,13 +575,7 @@ def write_report(bt: pd.DataFrame, monthly: pd.DataFrame, summary: dict) -> dict
         f"diagnostics. A score is a prediction, not an inspection result, so no ranked list of "
         f"named restaurants is published; per-restaurant predictions stay in the private "
         f"Actions cache for monitoring. Individual restaurants' actual results are already on "
-        f"the city's portal.\n\n"
-        f"**Status.** Built and run locally against the live portal; the GitHub Actions "
-        f"workflow has not run yet (it needs this repo on GitHub, Settings > Pages > Source set "
-        f"to GitHub Actions, and a free Socrata app token saved as the `SOCRATA_APP_TOKEN` "
-        f"secret), so the guide's \"two weeks without manual fixes\" bar is not met yet. "
-        f"Scheduled workflows in public repos stop after 60 days without activity: re-enable "
-        f"with `gh workflow enable nightly.yml` and check the page's date.")
+        f"the city's portal.\n\n")
     out = {"text": text, "recent_days": float(recent["days_earlier"].mean()),
            "recent_auc": float(recent["auc"].mean()), "summary": summary}
     report.save_results("ext_c", out)
