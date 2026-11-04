@@ -286,7 +286,7 @@ Caveats: complaint, license and re-inspections also take inspector time and are 
 ### C. Live nightly scoring
 [![ci](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml) [![nightly](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml)
 
-**Live dashboard (Extension C):** https://chensirui3.github.io/chicago-inspection/, rebuilt nightly from the city's portal.
+**Live dashboard:** https://chensirui3.github.io/chicago-inspection/, rebuilt nightly from the city's portal.
 <!-- BEGIN:ext_c -->
 **Label.** Under the 2018 food code a result of *Pass* means no Priority (P) or Priority Foundation (PF) violation, *Pass w/ Conditions* means at least one was found and corrected on site, *Fail* means at least one could not be corrected. So "at least one P or PF violation" = Fail or Pass w/ Conditions. It is broader than the 2014 critical-only target (about 48% of canvass inspections vs 15.8% in the 2014 test window), so **these numbers are not comparable with the 7.44 days**. History before July 2018 uses "any critical or serious violation" (codes 1-29), never old results. Completed canvass inspections only (Out of Business, No Entry, Business Not Located and Not Ready dropped).
 
