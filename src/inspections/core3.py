@@ -1,4 +1,4 @@
-"""Core 3: how much of the 7.44 days depends on information a scheduler would not have had?
+"""How much of the 7.44 days depends on information a scheduler would not have had?
 
 The backtest keeps, for every inspection, the score computed with the inspector who actually did
 it, the temperature of its actual date and the time since its previous visit measured to its

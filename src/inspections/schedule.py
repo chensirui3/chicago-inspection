@@ -6,8 +6,8 @@ order to maximize the total predicted risk visited (the expected number of criti
 found) subject to each inspector's shift and to the number of canvass inspections actually done
 that day. Then it removes the visited restaurants and plans the next day (rolling horizon).
 
-Scores: my best model without inspector features, computed as of 2014-09-02 (Core 3), because a
-scheduler planning the window could not know who would inspect or the actual dates.
+Scores: my best model without inspector features, computed as of 2014-09-02 (section 3),
+because a scheduler planning the window could not know who would inspect or the actual dates.
 """
 
 from __future__ import annotations

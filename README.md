@@ -81,17 +81,17 @@ first-half share), run on the city's own data snapshot.
 ## 2. Beating the benchmark
 
 <!-- BEGIN:core2 -->
-Same rows, split, target and metric code as Core 1. Choices were made only inside the training period: six rolling windows (train before a cutoff, validate on the next two months; cutoffs May 2013 to March 2014), never random K-fold, because a restaurant's later visits would leak into training. Hyperparameters were chosen by validation log-loss and the model family by validation days-earlier; the test window was then scored once per final model. Every model was run with and without the inspector feature.
+Same rows, split, target and metric code as section 1. Choices were made only inside the training period: six rolling windows (train before a cutoff, validate on the next two months; cutoffs May 2013 to March 2014), never random K-fold, because a restaurant's later visits would leak into training. Hyperparameters were chosen by validation log-loss and the model family by validation days-earlier; the test window was then scored once per final model. Every model was run with and without the inspector feature.
 
 | Model | Inspector | Validation days earlier | Test days earlier [95% CI] | Minus city [95% CI] | SD | Found later | First-half share | AUC |
 |---|---|---|---|---|---|---|---|---|
-| City GLM (Core 1 port, published) | yes | 10.41 | 7.44 [4.38, 9.94] | - | 25.2 | 99 | 68.2% | 0.672 |
+| City GLM (Python port, published) | yes | 10.41 | 7.44 [4.38, 9.94] | - | 25.2 | 99 | 68.2% | 0.672 |
 | City XGBoost (saved 2017 scores) | yes |  | 7.79 [4.91, 10.33] | +0.38 [-0.31, +1.09] | 25.0 | 104 | 68.2% | 0.679 |
 | LightGBM, city features | yes | 10.33 | 7.74 [4.74, 10.25] | +0.32 [-0.02, +0.72] | 24.8 | 99 | 67.8% | 0.678 |
 | Ridge logistic, extended features | yes | 10.85 | 8.23 [5.24, 10.84] | +0.89 [+0.11, +1.67] | 25.4 | 96 | 70.9% | 0.689 |
 | LightGBM, extended features | yes | 10.81 | 8.99 [6.18, 11.55] | +1.59 [+0.68, +2.44] | 24.5 | 94 | 70.5% | 0.702 |
 | Blend (ridge + LightGBM), extended features **(selected)** | yes | 10.94 | 8.70 [5.77, 11.30] | +1.32 [+0.53, +2.12] | 25.0 | 95 | 70.2% | 0.697 |
-| City GLM (Core 1) | no | 3.15 | 2.20 [-0.66, 4.66] | -5.26 [-7.07, -3.42] | 25.4 | 124 | 56.6% | 0.570 |
+| City GLM (Python port) | no | 3.15 | 2.20 [-0.66, 4.66] | -5.26 [-7.07, -3.42] | 25.4 | 124 | 56.6% | 0.570 |
 | LightGBM, city features | no | 2.58 | 2.74 [0.15, 5.10] | -4.68 [-6.69, -2.72] | 24.2 | 120 | 57.0% | 0.580 |
 | Ridge logistic, extended features | no | 6.18 | 5.51 [2.73, 8.15] | -1.85 [-3.51, -0.12] | 25.8 | 104 | 64.7% | 0.636 |
 | LightGBM, extended features | no | 6.20 | 6.42 [3.58, 9.06] | -0.97 [-2.80, +0.83] | 25.5 | 93 | 69.0% | 0.653 |
@@ -246,7 +246,7 @@ Inspections were placed in Chicago's 77 community areas with a spatial join (24 
 ### B. Inspection scheduling
 
 <!-- BEGIN:ext_a -->
-A team orienteering problem in OR-Tools, solved day by day over the window (rolling horizon): each inspector's travel plus inspection time must fit one shift, each restaurant is visited at most once, each day's visits are capped at the canvass inspections actually done that day, and skipping a restaurant costs its predicted risk. Travel time is Manhattan distance at an assumed speed. Scores: my model without inspector features, as of 2014-09-02 (Core 3). Baseline assumptions: 10 inspectors on canvass duty, 7-hour field shifts, 60 minutes per inspection, 20 km/h, one central office; guided local search for 10 s per day.
+A team orienteering problem in OR-Tools, solved day by day over the window (rolling horizon): each inspector's travel plus inspection time must fit one shift, each restaurant is visited at most once, each day's visits are capped at the canvass inspections actually done that day, and skipping a restaurant costs its predicted risk. Travel time is Manhattan distance at an assumed speed. Scores: my model without inspector features, as of 2014-09-02 (section 3). Baseline assumptions: 10 inspectors on canvass duty, 7-hour field shifts, 60 minutes per inspection, 20 km/h, one central office; guided local search for 10 s per day.
 
 | Strategy | Avg. days earlier | Critical violations found in first half | Travel hours (window total) | Overtime hours | Inspections per inspector-day | Not reached by Oct 31 |
 |---|---|---|---|---|---|---|
@@ -294,7 +294,7 @@ Caveats: complaint, license and re-inspections also take inspector time and are 
 
 **Data.** Food Inspections from July 2016 (history), Business Licenses (license age > 4 years, and whether the business account holds a liquor-consumption or tobacco license), Crimes (burglaries) and 311 Service Requests ("Sanitation Code Violation" and "Garbage Cart Maintenance" are the exact type names; duplicates and canceled requests dropped) for the 90-day densities, NOAA daily maximum temperature at O'Hare. The new 311 system starts Dec 18, 2018, so the modeling table starts 2019-03-18: 46,922 canvass inspections outside the pandemic period (Mar 16, 2020 to Jun 30, 2021, when volumes collapsed and rates shifted; it is excluded from training and flagged in the backtest). 83% of canvass inspections match a business license by license number (logged every night).
 
-**Forward validation.** Train through one month, score the next, slide month by month (same ridge + LightGBM blend as Core 2, no inspector features). Over the last 12 full months the model finds P/PF violations 2.8 days earlier on average within each month (range 1.2 to 4.3; AUC 0.665). The days are smaller than a two-month window's because each month spans half as many days. The label drifted: 73% of canvass inspections found a P/PF violation in 2019, 39% over the last 12 months, so calibration drifts too; retraining every night and the calibration monitor exist for that.
+**Forward validation.** Train through one month, score the next, slide month by month (same ridge + LightGBM blend as section 2, no inspector features). Over the last 12 full months the model finds P/PF violations 2.8 days earlier on average within each month (range 1.2 to 4.3; AUC 0.665). The days are smaller than a two-month window's because each month spans half as many days. The label drifted: 73% of canvass inspections found a P/PF violation in 2019, 39% over the last 12 months, so calibration drifts too; retraining every night and the calibration monitor exist for that.
 
 **Nightly job** (`.github/workflows/nightly.yml`, cron in UTC): fetch rows changed since the last run with the app token from the `SOCRATA_APP_TOKEN` secret; validate columns, row counts and freshness and fail loudly otherwise; rebuild features as of today; retrain; score the 8,793 retail food establishments due for a canvass (risk 1 after 6 months, risk 2 after a year, risk 3 after two); publish a static GitHub Pages dashboard (map by community area, score distribution, monthly backtest, last-updated time) and its CSV/JSON; compare earlier predictions with outcomes since for a calibration chart. The numbers in this section are from the run of 2026-11-04 00:54 CST; the dashboard shows the latest run.
 
@@ -329,7 +329,7 @@ Caveats: complaint, license and re-inspections also take inspector time and are 
   days-earlier has a standard error of about 1.6 days, so only paired comparisons are
   meaningful, and a different window could rank the models differently.
 - **Labels depend on who inspects.** "Critical violation found" varies roughly 14-fold across
-  inspector clusters for similar kitchens (Core 3), so every model here partly predicts the
+  inspector clusters for similar kitchens (section 3), so every model here partly predicts the
   inspector, and every evaluation inherits that noise.
 - **The backtest assumes violations don't change within the window**: a violation found on
   day 40 is assumed to have been there on day 1. This is untestable, and it flatters every
@@ -338,7 +338,7 @@ Caveats: complaint, license and re-inspections also take inspector time and are 
   Priority Foundation); the 2014 results do not carry over, which is why Extension C defines a
   new label.
 - **Rebuilt rows.** The 2019 snapshot no longer joins to the published row set by itself; the
-  benchmark rows come from the city's own 2017 table (see Core 1).
+  benchmark rows come from the city's own 2017 table (see section 1).
 - **Scheduling assumptions** are not observed; the sensitivity table shows how much they
   matter.
 
@@ -379,7 +379,7 @@ Random seeds are fixed in `src/inspections/config.py`; LightGBM runs in determin
 │   ├── features.py           # ports of the city's feature code + new features
 │   ├── models.py             # exact glmnet port, glum / scikit-learn routes, LightGBM
 │   ├── evaluate.py           # days-earlier simulation, first-half share, bootstrap
-│   ├── core1.py core2.py core3.py
+│   ├── core1.py core2.py core3.py  # sections 1 to 3
 │   ├── fairness.py           # neighborhood fairness audit
 │   ├── schedule.py           # inspection scheduling (OR-Tools)
 │   ├── live.py site.py       # Extension C (nightly job, static dashboard)

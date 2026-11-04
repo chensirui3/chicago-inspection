@@ -1,8 +1,8 @@
-"""Core 2 on its own: model search inside the training period, then the benchmark table.
+"""Section 2 on its own: model search inside the training period, then the benchmark table.
 
     python scripts/benchmark.py
 
-Runs Core 1 first if its cached scores are missing, then rolling-origin validation, tuning,
+Runs section 1 first if its cached scores are missing, then rolling-origin validation, tuning,
 the selection rule and one scoring of the test window, and prints the results table
 (reports/tables/core2_results.md). Same code path as `scripts/reproduce.py --only core2`.
 """

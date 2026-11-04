@@ -304,7 +304,7 @@ def run() -> dict:
     out["table_tradeoff"] = report.save_table(tab, "ext_b_tradeoff")
     plots.render("ext_b_tradeoff", draw_tradeoff, size=(7.6, 4.8), df=trade)
 
-    # ---- cause check: inspector mix by group (Core 3 link) ------------------------------------
+    # ---- cause check: inspector mix by group (link to section 3) ------------------------------
     st = pd.read_csv(config.TABLES_DIR / "core3_stringency.csv")
     strict = set(st.loc[st["Observed / expected [95% CI]"].str.split().str[0].astype(float) > 1,
                         "Cluster"])

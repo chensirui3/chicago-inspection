@@ -1,6 +1,6 @@
-"""Core 2: try to beat the published benchmark under the same rules.
+"""Try to beat the published benchmark under the same rules (README section 2).
 
-Same rows, split, target and metric code as Core 1. Model and hyperparameter choices are made
+Same rows, split, target and metric code as section 1. Model and hyperparameter choices are made
 only inside the training period with rolling-origin validation (train before a cutoff, validate
 on the next two months, roll forward); the Sept-Oct 2014 test window is scored once per final
 model. Wins are judged with a paired bootstrap against the city's model.
@@ -37,7 +37,7 @@ class Spec:
 
     @property
     def label(self) -> str:
-        names = {"city_glm": "City GLM (Core 1)", "ridge": "Ridge logistic",
+        names = {"city_glm": "City GLM (Python port)", "ridge": "Ridge logistic",
                  "lgbm": "LightGBM", "blend": "Blend (ridge + LightGBM)"}
         fs = "" if self.family == "city_glm" else (
             ", city features" if self.feature_set == "city" else ", extended features")
@@ -245,7 +245,7 @@ def run() -> dict:
     val = pd.DataFrame(val_rows).set_index("key")
 
     # The pre-registered choice: best mean validation days-earlier among models with inspectors
-    # (the published setup), then the same family without inspectors for Core 3.
+    # (the published setup), then the same family without inspectors for section 3.
     with_insp = [k for k in specs if k[2]]
     best_key = max(with_insp, key=lambda k: val.loc[[k], "val_days"].iloc[0])
     best_noinsp_key = (best_key[0], best_key[1], False)
@@ -288,7 +288,7 @@ def run() -> dict:
         key = names.get(name)
         spec = specs[key] if key else None
         vkey = key or (("city_glm", "city", True) if name == "city_published" else None)
-        baseline_label = {"city_published": "City GLM (Core 1 port, published)",
+        baseline_label = {"city_published": "City GLM (Python port, published)",
                           "city_xgboost": "City XGBoost (saved 2017 scores)"}
         row = {
             "name": name,
@@ -447,7 +447,7 @@ def run() -> dict:
         f"window (4.5 months after training ends) {out['best']['days']:.2f}.",
     ]
 
-    # ---- cache for Core 3 and the extensions ---------------------------------------------------
+    # ---- cache for section 3 and the extensions ------------------------------------------------
     sc = test[["Inspection_ID"]].copy()
     sc["best_score"] = best_scores
     sc["best_calibrated"] = best_cal

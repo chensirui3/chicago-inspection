@@ -252,7 +252,7 @@ def fit_sklearn(X, y, penalty_factor, lam: float, big: float = 100.0):
 
 
 # ----------------------------------------------------------------------------------------------
-# Gradient-boosted trees and time-respecting validation (Core 2)
+# Gradient-boosted trees and time-respecting validation (section 2)
 # ----------------------------------------------------------------------------------------------
 def fit_lgbm(X: pd.DataFrame, y, params: dict, seed: int = 0):
     import lightgbm as lgb

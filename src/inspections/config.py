@@ -18,7 +18,7 @@ CACHE_DIR = REPORTS_DIR / "cache"  # git-ignored intermediate results
 SITE_DIR = ROOT / "site"  # Extension C static dashboard (GitHub Pages)
 
 # The city's repository, pinned to the commit this project was built against (v1.7.0 merge,
-# 2019-04-13). DATA/ was regenerated in that release; see "Row set" under Core 1 in the README.
+# 2019-04-13). DATA/ was regenerated in that release; see "Row set" in README section 1.
 CITY_REPO_URL = "https://github.com/Chicago/food-inspections-evaluation.git"
 CITY_REPO_COMMIT = "603d8dba4d2ea266aced60ac49bdd6ee96704d05"
 

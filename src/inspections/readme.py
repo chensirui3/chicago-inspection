@@ -114,7 +114,7 @@ def sections() -> dict[str, str]:
 
         cal = c2["calibration"]
         s["core2"] = "\n\n".join([
-            "Same rows, split, target and metric code as Core 1. Choices were made only inside "
+            "Same rows, split, target and metric code as section 1. Choices were made only inside "
             "the training period: six rolling windows (train before a cutoff, validate on the "
             "next two months; cutoffs May 2013 to March 2014), never random K-fold, because a "
             "restaurant's later visits would leak into training. Hyperparameters were chosen by "
@@ -269,7 +269,7 @@ def sections() -> dict[str, str]:
             f"shift, each restaurant is visited at most once, each day's visits are capped at "
             f"the canvass inspections actually done that day, and skipping a restaurant costs "
             f"its predicted risk. Travel time is Manhattan distance at an assumed speed. Scores: "
-            f"my model without inspector features, as of 2014-09-02 (Core 3). Baseline "
+            f"my model without inspector features, as of 2014-09-02 (section 3). Baseline "
             f"assumptions: {asm['inspectors']} inspectors on canvass duty, "
             f"{asm['shift_min'] / 60:.0f}-hour field shifts, {asm['service_min']} minutes per "
             f"inspection, {asm['speed_kmh']:.0f} km/h, one central office; guided local search "

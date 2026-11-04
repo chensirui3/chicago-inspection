@@ -5,7 +5,7 @@ Chicago; MIT-style license): CODE/30a_glmnet_model.R (joins and transforms),
 functions/weather_3day_calc.R, CODE/23_food_insp_features.R with functions/filter_foodInspect.R,
 calculate_violation_matrix.R and calculate_violation_types.R (history features), and
 CODE/22_calculate_heat_map_values.R with functions/calculate_heat_values.R and kde.R
-(density features). New features for Core 2 and the as-of-date rebuild for Core 3 are below.
+(density features). Section 2's new features and section 3's as-of-date rebuild are below.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ DAY = pd.Timedelta(days=1)
 
 
 # ----------------------------------------------------------------------------------------------
-# Core 1: the city's modeling table
+# The city's modeling table (section 1)
 # ----------------------------------------------------------------------------------------------
 def weather_3day(weather: pd.DataFrame) -> pd.DataFrame:
     """For each date, the mean of each weather column over the three preceding days.
@@ -251,7 +251,7 @@ def heat_values(
     """Density of ``obs`` within ``window`` days up to and including each point's date.
 
     ``points`` needs Inspection_Date, Latitude and Longitude. With ``as_of`` every point uses
-    the window ending on that date instead (Core 3's "as of day one" scoring).
+    the window ending on that date instead (section 3's "as of day one" scoring).
     """
     dates = (
         pd.Series(pd.Timestamp(as_of), index=points.index)
@@ -275,7 +275,7 @@ def heat_values(
 
 
 # ----------------------------------------------------------------------------------------------
-# Core 2: new features. Every one is computed from records dated strictly before the inspection.
+# Section 2's new features, each computed from records dated strictly before the inspection.
 # ----------------------------------------------------------------------------------------------
 _KEY = 100_000  # (license, day) -> license * _KEY + day; days since 1970 stay below 100,000
 
@@ -350,7 +350,7 @@ def extended_features(table: pd.DataFrame, as_of=None, train_mask=None,
     Longitude, Facility_Type, Risk).
 
     With ``as_of`` every row is described as of that date instead of its own inspection date
-    (Core 3). ``train_mask`` marks the rows used to choose which past violation codes to keep
+    (section 3). ``train_mask`` marks the rows used to choose which past violation codes to keep
     (codes seen at >= 2% of previous visits); ``code_columns`` fixes that list instead.
     """
     ev = raw_events() if events is None else events

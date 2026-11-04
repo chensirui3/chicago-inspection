@@ -1,4 +1,4 @@
-"""Core 1: reproduce the city's published model and evaluation in Python."""
+"""Reproduce the city's published model and evaluation in Python (README section 1)."""
 
 from __future__ import annotations
 

@@ -361,7 +361,7 @@ def feature_columns(table: pd.DataFrame) -> list[str]:
 
 
 # ----------------------------------------------------------------------------------------------
-# Model (the Core 2 family: ridge + LightGBM blend, no inspector)
+# Model (the section 2 family: ridge + LightGBM blend, no inspector)
 # ----------------------------------------------------------------------------------------------
 @dataclass
 class LiveModel:
@@ -552,7 +552,7 @@ def write_report(bt: pd.DataFrame, monthly: pd.DataFrame, summary: dict) -> dict
         f"{ch['license_match_rate']:.0%} of canvass inspections match a business license by "
         f"license number (logged every night).\n\n"
         f"**Forward validation.** Train through one month, score the next, slide month by "
-        f"month (same ridge + LightGBM blend as Core 2, no inspector features). Over the last "
+        f"month (same ridge + LightGBM blend as section 2, no inspector features). Over the last "
         f"12 full months the model finds P/PF violations "
         f"{recent['days_earlier'].mean():.1f} days earlier on average within each month "
         f"(range {recent['days_earlier'].min():.1f} to {recent['days_earlier'].max():.1f}; "
