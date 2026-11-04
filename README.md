@@ -1,7 +1,5 @@
 # Chicago restaurant inspections: reproduce, beat, and stress-test the city's model
-[![ci](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml) [![nightly](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml)
 
-**Live dashboard (Extension C):** https://chensirui3.github.io/chicago-inspection/, rebuilt nightly from the city's portal.
 <!-- BEGIN:summary -->
 This repo rebuilds the City of Chicago's 2014 restaurant-inspection model in Python and **reproduces its published result: 7.44 days earlier** (published 7.44) on the same 1,637 inspections, with the same first-half share (54.7% -> 68.2%) and coefficients within 0.007. Under the same rules, a blend of ridge logistic regression and LightGBM with new history, complaint, facility and neighborhood features finds critical violations **8.70 days earlier [5.77, 11.30]**, +1.32 days [+0.53, +2.12] versus the city's model in a paired bootstrap (a win: the interval is above zero; versus the city's XGBoost it is +0.93 [-0.02, +1.96]). **The inspector question:** most of the published gain depends on knowing who did each inspection. Scored with only what a scheduler knew on 2014-09-02, the city's model finds violations 2.06 days earlier [-0.82, 4.69], 72% less than published; my model keeps 6.10 days [3.27, 8.83].
 <!-- END:summary -->
@@ -286,7 +284,9 @@ Caveats: complaint, license and re-inspections also take inspector time and are 
 <!-- END:ext_a -->
 
 ### C. Live nightly scoring
+[![ci](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml) [![nightly](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml)
 
+**Live dashboard (Extension C):** https://chensirui3.github.io/chicago-inspection/, rebuilt nightly from the city's portal.
 <!-- BEGIN:ext_c -->
 **Label.** Under the 2018 food code a result of *Pass* means no Priority (P) or Priority Foundation (PF) violation, *Pass w/ Conditions* means at least one was found and corrected on site, *Fail* means at least one could not be corrected. So "at least one P or PF violation" = Fail or Pass w/ Conditions. It is broader than the 2014 critical-only target (about 48% of canvass inspections vs 15.8% in the 2014 test window), so **these numbers are not comparable with the 7.44 days**. History before July 2018 uses "any critical or serious violation" (codes 1-29), never old results. Completed canvass inspections only (Out of Business, No Entry, Business Not Located and Not Ready dropped).
 
