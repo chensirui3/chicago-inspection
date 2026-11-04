@@ -163,11 +163,15 @@ def _get_with_retries(session, url: str, params: dict, retries: int):
     """GET with exponential backoff on timeouts, dropped connections, 429 and 5xx."""
     import requests
 
+    # A connection the portal drops partway through a response body raises
+    # ChunkedEncodingError, which is neither a Timeout nor a ConnectionError.
+    transient = (requests.Timeout, requests.ConnectionError,
+                 requests.exceptions.ChunkedEncodingError)
     for attempt in range(retries):
         last = attempt == retries - 1
         try:
             resp = session.get(url, params=params, timeout=(30, 300))
-        except (requests.Timeout, requests.ConnectionError):
+        except transient:
             if last:
                 raise
         else:

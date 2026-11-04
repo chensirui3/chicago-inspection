@@ -58,6 +58,18 @@ def test_server_errors_are_retried_then_raised(monkeypatch):
     assert len(session.calls) == 3
 
 
+def test_a_page_cut_off_mid_response_is_retried(monkeypatch):
+    cut_off = requests.exceptions.ChunkedEncodingError("Connection broken: IncompleteRead")
+    page = FakeResponse('":id","id"\n"row-a","1"\n')
+    session = FakeSession([cut_off, page])
+    monkeypatch.setattr(load, "_session", lambda: session)
+
+    df = load.socrata_frame("crimes", select="id")
+
+    assert df["id"].tolist() == ["1"]
+    assert len(session.calls) == 2
+
+
 def test_repeated_timeouts_give_up_after_the_retry_budget(monkeypatch):
     session = FakeSession([requests.ConnectTimeout("down")] * 2)
     monkeypatch.setattr(load, "_session", lambda: session)
