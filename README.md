@@ -201,7 +201,7 @@ The city's 7.44 days mostly come from one variable a scheduler cannot use. Remov
 
 ## Extensions
 
-### B. Neighborhood fairness audit
+### A. Neighborhood fairness audit
 
 <!-- BEGIN:ext_b -->
 Inspections were placed in Chicago's 77 community areas with a spatial join (24 of 1,637 test inspections fall outside the polygons and are left out), then grouped into thirds of community areas by the 2008-2012 hardship index. Fairness definition: **calibration within groups**, because a scheduler acts on predicted risk; the other four metrics from the guide are shown too. All intervals are 1,000 bootstrap resamples (simulation re-run each time), and the simulation runs on the 1,613 placed inspections, so overall days-earlier here differ slightly from the 1,637-inspection headline.
@@ -245,7 +245,7 @@ Inspections were placed in Chicago's 77 community areas with a spatial join (24 
 </picture>
 <!-- END:ext_b -->
 
-### A. Inspection scheduling
+### B. Inspection scheduling
 
 <!-- BEGIN:ext_a -->
 A team orienteering problem in OR-Tools, solved day by day over the window (rolling horizon): each inspector's travel plus inspection time must fit one shift, each restaurant is visited at most once, each day's visits are capped at the canvass inspections actually done that day, and skipping a restaurant costs its predicted risk. Travel time is Manhattan distance at an assumed speed. Scores: my model without inspector features, as of 2014-09-02 (Core 3). Baseline assumptions: 10 inspectors on canvass duty, 7-hour field shifts, 60 minutes per inspection, 20 km/h, one central office; guided local search for 10 s per day.
@@ -391,21 +391,6 @@ Random seeds are fixed in `src/inspections/config.py`; LightGBM runs in determin
 └── .github/workflows/        # ci.yml (lint + tests on every push), nightly.yml (Extension C)
 ```
 
-## Pitfalls checklist
-
-| Pitfall | How this repo handles it |
-|---|---|
-| Dates disagree between CONTRIBUTING.md, the report and the code | The code is the source of truth: test = last 90 days, training = canvass inspections after 2011-09-01 (2011-09-02 to 2014-04-16). |
-| README points to `CODE/30_glmnet_model.R` | Ported `30a_glmnet_model.R` and `30b_glmnet_model_evaluation.R`; the 2015 `30_glmnet_model.R` from git history explains the hand-picked lambda. |
-| Row counts after every join | Logged in `reports/tables/core1_join_counts.md`; 17,075 / 1,637 / 258 asserted in `tests/test_reproduction.py`. |
-| Score ties | Broken by Inspection_ID ascending (`evaluate.ranking_order`), tested. |
-| Features only from information dated before the inspection | Every new feature uses records strictly before the inspection date (`features.EventIndex`); Core 3 rebuilds everything as of 2014-09-02. |
-| Never tune on Sept-Oct 2014 | Tuning and model choice use rolling windows inside the training period; the test window was scored once per final model, and all candidates are reported. |
-| Paired bootstrap | 1,000 paired resamples for every comparison (inspection-level, plus day-level for the headline). |
-| Don't mix violation labels across July 1, 2018 | Extension C uses Fail / Pass w/ Conditions after the change and codes 1-29 before it. |
-| Live models can't use inspector identities | Extensions A and C use the no-inspector model. |
-| The untestable "found late = there early" assumption | Stated under Limitations and in Extension A. |
-| pyreadr | Crashes the interpreter on `23_food_insp_features.Rds` and reads data.table `IDate` columns as 1970-01-01, so `load.py` reads the snapshot with `rdata` instead. |
 
 ## Credits and license
 
