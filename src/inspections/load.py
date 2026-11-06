@@ -228,13 +228,12 @@ def socrata_frame(dataset: str, **kwargs) -> pd.DataFrame:
     return pd.concat(pages, ignore_index=True) if pages else pd.DataFrame()
 
 
-def download(url: str, dest: Path, overwrite: bool = False) -> Path:
-    """Download a URL to ``dest`` (atomic write)."""
+def download(url: str, dest: Path, overwrite: bool = False, retries: int = 5) -> Path:
+    """Download a URL to ``dest`` (atomic write), with the same retries as the portal pages."""
     if dest.exists() and not overwrite:
         return dest
     dest.parent.mkdir(parents=True, exist_ok=True)
-    resp = _session().get(url, timeout=300)
-    resp.raise_for_status()
+    resp = _get_with_retries(_session(), url, {}, retries)
     tmp = dest.with_suffix(dest.suffix + ".tmp")
     tmp.write_bytes(resp.content)
     tmp.replace(dest)

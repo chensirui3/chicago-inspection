@@ -55,6 +55,15 @@ jobs:
           key: live-${{ github.run_id }}
           restore-keys: live-
 
+      # The community-area polygons and socioeconomic table never change, so they are cached
+      # after the first download instead of fetched every night; a portal outage then cannot
+      # fail the next step.
+      - name: Static portal files
+        uses: actions/cache@v6
+        with:
+          path: data/external/portal
+          key: portal-static-v1
+
       - name: Community-area boundaries
         run: python -c "from inspections import load; load.fetch_extension_b_data()"
 

@@ -9,7 +9,12 @@ from inspections import load
 class FakeResponse:
     def __init__(self, text, status_code=200):
         self.text = text
+        self.content = text.encode()
         self.status_code = status_code
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            raise requests.HTTPError(f"{self.status_code} Server Error")
 
 
 class FakeSession:
@@ -20,7 +25,7 @@ class FakeSession:
         self.calls = []
 
     def get(self, url, params=None, timeout=None):
-        self.calls.append(dict(params))
+        self.calls.append(dict(params or {}))
         result = self.results.pop(0)
         if isinstance(result, Exception):
             raise result
@@ -67,6 +72,17 @@ def test_a_page_cut_off_mid_response_is_retried(monkeypatch):
     df = load.socrata_frame("crimes", select="id")
 
     assert df["id"].tolist() == ["1"]
+    assert len(session.calls) == 2
+
+
+def test_file_downloads_retry_a_busy_portal(monkeypatch, tmp_path):
+    geojson = '{"type": "FeatureCollection"}'
+    session = FakeSession([FakeResponse("busy", 503), FakeResponse(geojson)])
+    monkeypatch.setattr(load, "_session", lambda: session)
+
+    dest = load.download("https://example.org/areas.geojson", tmp_path / "areas.geojson")
+
+    assert dest.read_text() == geojson
     assert len(session.calls) == 2
 
 
