@@ -1,4 +1,5 @@
 # Chicago restaurant inspections: reproduce, beat, and stress-test the city's model
+[![ci](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml) [![nightly](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml)
 
 <!-- BEGIN:summary -->
 This repo rebuilds the City of Chicago's 2014 restaurant-inspection model in Python and **reproduces its published result: 7.44 days earlier** (published 7.44) on the same 1,637 inspections, with the same first-half share (54.7% -> 68.2%) and coefficients within 0.007. Under the same rules, a blend of ridge logistic regression and LightGBM with new history, complaint, facility and neighborhood features finds critical violations **8.70 days earlier [5.77, 11.30]**, +1.32 days [+0.53, +2.12] versus the city's model in a paired bootstrap (the interval is above zero; versus the city's XGBoost it is +0.93 [-0.02, +1.96]). **The inspector question:** most of the published gain depends on knowing who did each inspection. Scored with only what a scheduler knew on 2014-09-02, the city's model finds violations 2.06 days earlier [-0.82, 4.69], 72% less than published; my model keeps 6.10 days [3.27, 8.83].
@@ -284,8 +285,6 @@ Caveats: complaint, license and re-inspections also take inspector time and are 
 <!-- END:ext_a -->
 
 ### C. Live nightly scoring
-
-[![ci](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/ci.yml) [![nightly](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml/badge.svg)](https://github.com/chensirui3/chicago-inspection/actions/workflows/nightly.yml)
 
 **Live dashboard:** https://chensirui3.github.io/chicago-inspection/, rebuilt nightly from the city's portal.
 
