@@ -400,7 +400,7 @@ the Civic Consulting Alliance. Files that port its R code say so in their docstr
 its notice:
 
 > Copyright, 2014 City of Chicago. Permission is hereby granted, free of charge, to any person
-> obtaining a copy of this software ... (MIT-style; full text in [LICENSE](LICENSE)).
+> obtaining a copy of this software ... (MIT-style; full text in [NOTICE](NOTICE)).
 
 Live data: [City of Chicago Data Portal](https://data.cityofchicago.org) (Food Inspections,
 Business Licenses, Crimes, 311 Service Requests, Community Areas, 2008-2012 socioeconomic

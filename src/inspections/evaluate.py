@@ -4,7 +4,7 @@
 CODE/functions/simulated_date_diff_mean.R, simulated_bin_summary.R and gini.R, and
 ``first_half_share`` ports the end of CODE/30b_glmnet_model_evaluation.R, from the City of
 Chicago's food-inspections-evaluation repository.
-Copyright, 2014 City of Chicago (MIT-style license; see LICENSE).
+Copyright, 2014 City of Chicago (MIT-style license; see NOTICE).
 """
 
 from __future__ import annotations

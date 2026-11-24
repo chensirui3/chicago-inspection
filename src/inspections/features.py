@@ -1,7 +1,7 @@
 """Feature building.
 
 Python ports of the City of Chicago's food-inspections-evaluation code (Copyright, 2014 City of
-Chicago; MIT-style license): CODE/30a_glmnet_model.R (joins and transforms),
+Chicago; MIT-style license; see NOTICE): CODE/30a_glmnet_model.R (joins and transforms),
 functions/weather_3day_calc.R, CODE/23_food_insp_features.R with functions/filter_foodInspect.R,
 calculate_violation_matrix.R and calculate_violation_types.R (history features), and
 CODE/22_calculate_heat_map_values.R with functions/calculate_heat_values.R and kde.R

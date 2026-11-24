@@ -4,8 +4,8 @@
 per-feature penalty factors: the same objective, standardization, penalty-factor rescaling,
 lambda sequence and cross-validation rule as ``glmnet``/``cv.glmnet`` (glmnet 2.x/4.x), used by
 CODE/30a_glmnet_model.R of the City of Chicago's food-inspections-evaluation repository
-(Copyright, 2014 City of Chicago; MIT-style license). ``fit_glum`` and ``fit_sklearn`` fit the
-same model with two standard libraries and are kept as cross-checks.
+(Copyright, 2014 City of Chicago; MIT-style license; see NOTICE). ``fit_glum`` and
+``fit_sklearn`` fit the same model with two standard libraries and are kept as cross-checks.
 """
 
 from __future__ import annotations
